@@ -1,58 +1,41 @@
 require 'stashhouse/room'
 
-
-module Stashhouse
+module StashHouse
 	class House
-		attr_accessor :rooms
+		attr_accessor :rooms, :rows
 
 		def initialize(r)
-			generate(r)
+			@rows = r
+			build(r)
 		end
 
-		def valid_room?(x, y, r)
-			x >= 0 and x < r and y >= 0 and y < r
+		def valid_room?(x, y)
+			x >= 0 and x < @rows and y >= 0 and y < @rows
 		end
 
-		def floor_plan(current_location, thug_location, stash_location)
-			s = ""
-			@rooms.each_with_index  do |row, rownum|
-					row.each_with_index  do |col, colnum|  
-					s += "["
-					s += "X" if rownum == current_location[:x] and colnum == current_location[:y]
+		def floor_plan
+			s = "----------------------\n"
+			s += "Stash House Floorplan\n"
+			s += "---------------------\n"
 
-					@rooms[rownum][colnum].contents.each do |c|
-						s += "T" if c.is_a?(Thug)
-						s += "S" if c.is_a?(Stash)
+			@rooms.each do |row|
+				row.each do |room|
+					s += '['
+					room.contents.each do |c|
+						s += 'T' if c.is_a?(Thug)
+						s += 'S' if c.is_a?(Stash)
+						s += 'X' if c.is_a?(Playa)
 					end
-					s += "]"
+					s += ']'
 				end
-					s += "\n"
-			end
-			s
-		end
-
-		def room_plan(x, y)
-			s = ""
-			@rooms[x][y].walls.each do |direction, wall|
-				case direction
-				when 'N'
-				  s += "" #unless wall.door.nil?
-				when 'S'
-				  s += "_" #unless wall.door.nil? 
-				when 'E'
-				  s += "|" #unless wall.door.nil? 
-				when 'W'
-				  s += "|" #unless wall.door.nil?
-				 else
-				 	s += "|_|"
-				end			
+				s += "\n"
 			end
 			s
 		end
 
 		private
 
-		def generate(r)
+		def build(r)
 			row, col = 0, 0
 			# 3x3 grid map
 			@rooms = []
@@ -69,6 +52,5 @@ module Stashhouse
 				end
 			end
 		end
-
 	end
 end

@@ -1,4 +1,4 @@
-module Stashhouse
+module StashHouse
 	class Wall
 		attr_accessor :door
 

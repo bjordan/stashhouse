@@ -1,6 +1,6 @@
 require 'stashhouse/wall'
 
-module Stashhouse
+module StashHouse
 	class Room
 		attr_accessor :walls, :num_doors, :room_number, :contents
 

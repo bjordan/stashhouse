@@ -1,4 +1,4 @@
-module Stashhouse
+module StashHouse
 	class Thug
 		attr_accessor :name
 
@@ -7,7 +7,7 @@ module Stashhouse
 		end
 
 		def to_s
-    	"#{@name}"
+    	"#@name"
     end
   end
 end
