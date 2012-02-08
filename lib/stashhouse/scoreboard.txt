@@ -1,4 +1,5 @@
 bar,3
 stu,4
 john,5
-barry,3
+barry,4
+b,5

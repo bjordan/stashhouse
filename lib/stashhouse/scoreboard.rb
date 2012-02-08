@@ -11,14 +11,18 @@ module StashHouse
 			write_to_file()
 		end
 
-		def to_s
+		def print
 			puts "\nScoreboard"
 			puts '--------------'
 			puts "Playa \t Moves"
 			puts '--------------'
-			@scoreboard.each do |key, value|
-				puts "#{key} \t #{value}"
+			@scoreboard.each do |name, score|
+				puts "#{name} \t #{score}"
 			end
+		end
+
+		def to_s
+			"#@scoreboard"
 		end
 
 		private

@@ -1,14 +1,16 @@
+require 'stashhouse/actor'
+
 module StashHouse
-	class Playa
-		attr_accessor :name, :moves
+	class Playa < Actor
+		attr_accessor :moves
 
 		def initialize(name)
-			@name = name
+			super
 			@moves = 0
 		end
 
 		def to_s
-			"#@name #@moves"
+			"#@name #@location #@moves"
 		end
 	end
 end

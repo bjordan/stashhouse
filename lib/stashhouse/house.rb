@@ -33,6 +33,24 @@ module StashHouse
 			s
 		end
 
+    def next_room_coords(direction, current_coords)
+      case direction
+      when 'N'
+        x, y = current_coords[0] - 1, current_coords[1]
+      when 'S'
+        x, y = current_coords[0] + 1, current_coords[1]
+      when 'E'
+        x, y = current_coords[0], current_coords[1] + 1
+      when 'W'
+        x, y = current_coords[0], current_coords[1] - 1
+      end      
+    end
+
+    def move_actor(from_coords, to_coords, actor)
+       @rooms[from_coords[0]][from_coords[1]].contents.clear
+       @rooms[to_coords[0]][to_coords[1]].contents.push(actor)
+    end
+
 		private
 
 		def build(r)

@@ -5,29 +5,29 @@ require 'stashhouse/playa'
 require 'stashhouse/scoreboard'
 
 module StashHouse
-  class Engine
-    
+  class Engine   
     def initialize(num_rooms)     
       @num_rows = Math.sqrt(num_rooms)      
       
       @directions = ['N', 'S', 'E', 'W']
       @scoreboard = ScoreBoard.new
       @house = House.new(@num_rows)
-      @rooms = @house.rooms
 
       @stash = Stash.new(["100 Red Tops", "200 Yellow Tops"])
-      @thug = Thug.new("Slim Charles")
+      @thugs = [Thug.create(), Thug.create()]
     end
 
-    def init_player_locations
-      @current_location = [@num_rows-1, rand(@num_rows)]
-      @rooms[@current_location[0]][@current_location[1]].contents.push(@playa)
+    def init_actor_locations
+      @playa.location = [@num_rows-1, rand(@num_rows)]
+      @house.rooms[@playa.location[0]][@playa.location[1]].contents.push(@playa)
 
       @stash_location = [0,rand(@num_rows)]
-      @rooms[@stash_location[0]][@stash_location[1]].contents.push(@stash)
+      @house.rooms[@stash_location[0]][@stash_location[1]].contents.push(@stash)
 
-      @thug_location = [(@num_rows / 2).ceil, rand(@num_rows)]
-      @rooms[@thug_location[0]][@thug_location[1]].contents.push(@thug)
+      @thugs.each do |thug|
+        thug.location = [(@num_rows / 2).ceil, rand(@num_rows)]
+        @house.rooms[thug.location[0]][thug.location[1]].contents.push(thug)
+      end
     end
 
     def start
@@ -36,7 +36,7 @@ module StashHouse
       playa_name = STDIN.gets.chomp()
       @playa = Playa.new(playa_name)
 
-      init_player_locations()  
+      init_actor_locations()  
 
       print_floorplan()
 
@@ -58,21 +58,21 @@ module StashHouse
 
     def move(direction)
       # convert direction to next room coordinates
-      x, y = *next_room_coords(direction, @current_location)
+      x, y = *@house.next_room_coords(direction, @playa.location)
 
       # check if move is valid (not off the map)
       if @house.valid_room?(x, y)
-        @rooms[@current_location[0]][@current_location[1]].contents.clear
-        @rooms[x][y].contents.push(@playa)
-        @current_location = [x, y]        
+        @house.move_actor(@playa.location, [x, y], @playa)
+        @playa.location = [x, y]
         game_status()
-        move_thug()
-        game_status()
+        move_thugs()
         @playa.moves += 1
       else
-        p 'You just walked into a wall dumb ass.' 
+        p 'You just walked into a wall dumb ass.'
+        move_thugs()         
       end
 
+      game_status()
       print_floorplan()
     end
 
@@ -80,63 +80,58 @@ module StashHouse
       /^[N|S|E|W]$/i =~ direction
     end
 
+    def move_thugs
+      @thugs.each do |thug|
+        move_thug(thug)
+      end
+    end 
+
     # recursive, only move one room at a time if the move is valid
-    def move_thug
+    def move_thug(thug)
       next_direction = @directions[rand(@directions.size - 1)]
       
-      x, y = *next_room_coords(next_direction, @thug_location)
+      x, y = *@house.next_room_coords(next_direction, thug.location)
  
       if @house.valid_room?(x, y)
-        @rooms[@thug_location[0]][@thug_location[1]].contents.clear
-        @rooms[x][y].contents.push(@thug)
-        @thug_location = [x, y]
+        @house.move_actor(thug.location, [x, y], thug)
+        thug.location = [x, y]
       else
-        move_thug()
+        move_thug(thug)
       end
     end
 
     # check if you encountered the thug or found the stash
     def game_status
-      if stash_found?
-        puts "You found the stash #{@stash}.\nNow get the hell outta there before #{@thug} smokes your ass."
-        print_floorplan()
-        end_game()
-      end       
       if ass_smoked?
-        p "You got your ass smoked by #{@thug}."
-        print_floorplan()
+        p "You got your ass smoked."
         end_game()
       end 
+      if stash_found?
+        puts "You found the stash #{@stash}.\nNow get the hell outta there before your ass gets smoked."      
+        @scoreboard.update(@playa)
+        end_game()
+      end       
     end 
 
     def stash_found?
-      @stash_location[0] == @current_location[0] and @stash_location[1] == @current_location[1]
+      @stash_location[0] == @playa.location[0] and @stash_location[1] == @playa.location[1]
     end 
 
     def ass_smoked?
-      @thug_location[0] == @current_location[0] and @thug_location[1] == @current_location[1]
+      smoked = false
+      @thugs.each do |thug|
+        return true if thug.location[0] == @playa.location[0] and thug.location[1] == @playa.location[1]
+      end
+      smoked
     end 
 
     def print_floorplan
       print @house.floor_plan()
     end
 
-    def next_room_coords(direction, current_coords)
-      case direction
-      when 'N'
-        x, y = current_coords[0] - 1, current_coords[1]
-      when 'S'
-        x, y = current_coords[0] + 1, current_coords[1]
-      when 'E'
-        x, y = current_coords[0], current_coords[1] + 1
-      when 'W'
-        x, y = current_coords[0], current_coords[1] - 1
-      end      
-    end
-
     def end_game
-      @scoreboard.update(@playa)
-      puts "#@scoreboard"
+      print_floorplan()
+      @scoreboard.print
       Process.exit(1)
     end   
   end
