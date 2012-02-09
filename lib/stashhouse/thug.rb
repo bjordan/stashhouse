@@ -2,8 +2,10 @@ require 'stashhouse/actor'
 
 module StashHouse
   class Thug < Actor
+    private_class_method :new
 
-    @@thug_names = ['Body', 'Snoop', 'Slim Charles', 'Poot']
+    @@THUG_NAMES = %w[Chris Snoop Slim Charles Marlow Stringer]
+    @@NAME_INDEX = -1
 
     def initialize(name)
       super
@@ -11,7 +13,8 @@ module StashHouse
 
     # factory method
     def self.create
-      Thug.new(@@thug_names[rand(@@thug_names.length - 1)])
+      @@NAME_INDEX += 1
+      new(@@THUG_NAMES[@@NAME_INDEX])
     end
 
     def to_s

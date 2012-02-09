@@ -4,13 +4,14 @@ module StashHouse
   class House
     attr_accessor :rooms, :rows
 
-    def initialize(r)
-      @rows = r
-      build(r)
+    def initialize(rows, cols)
+      @rows = rows
+      @cols = cols
+      build()
     end
 
     def valid_room?(x, y)
-      x >= 0 and x < @rows and y >= 0 and y < @rows
+      x >= 0 and x < @rows and y >= 0 and y < @cols
     end
 
     def floor_plan
@@ -21,10 +22,11 @@ module StashHouse
       @rooms.each do |row|
         row.each do |room|
           s += '['
+          s += ' ' if room.contents.empty?
           room.contents.each do |c|
             s += 'T' if c.is_a?(Thug)
             s += 'S' if c.is_a?(Stash)
-            s += 'X' if c.is_a?(Playa)
+            s += 'P' if c.is_a?(Playa)
           end
           s += ']'
         end
@@ -47,24 +49,29 @@ module StashHouse
     end
 
     def move_actor(from_coords, to_coords, actor)
-       @rooms[from_coords[0]][from_coords[1]].contents.clear
-       @rooms[to_coords[0]][to_coords[1]].contents.push(actor)
+      # there may be more than 1 actor in the room. If names are equal(eql?) then delete.
+      @rooms[from_coords[0]][from_coords[1]].contents.delete_if { |i| i.eql?(actor) }
+      @rooms[to_coords[0]][to_coords[1]].contents.push(actor)
+    end
+
+    def in_same_room?(content, playa)
+      content.location[0] == playa.location[0] and content.location[1] == playa.location[1]
     end
 
     private
 
-    def build(r)
+    def build
       row, col = 0, 0
       # 3x3 grid map
       @rooms = []
-      r.to_i.times { @rooms << Array.new(r.to_i) }
+      @rows.to_i.times { @rooms << Array.new(@cols.to_i) }
 
       # populate map with rooms
-      1.upto(r**2) do |room_num|      
+      1.upto(@rows * @cols) do |room_num|      
         @rooms[row][col] = Room.new(room_num)
         col += 1
 
-        if room_num % r == 0
+        if room_num % @rows == 0
           row += 1
           col = 0
         end

@@ -6,5 +6,9 @@ module StashHouse
       @name = name
       @location = [0, 0]
     end
+
+    def eql?(o)
+      o.name == @name
+    end
   end
 end

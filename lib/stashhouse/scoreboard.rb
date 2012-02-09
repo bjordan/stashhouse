@@ -1,7 +1,7 @@
 module StashHouse
   class ScoreBoard
     def initialize
-      @scoreboard_file = File.open(File.expand_path(File.dirname(__FILE__) + '/scoreboard.txt'), 'r+')
+      @scoreboard_file = File.open('stashhouse/scoreboard.txt', 'r+')
       @scoreboard = {}
       load_from_file()
     end
@@ -16,7 +16,7 @@ module StashHouse
       puts '--------------'
       puts "Playa \t Moves"
       puts '--------------'
-      @scoreboard.each do |name, score|
+      @scoreboard.sort_by { |name, score| score }.each do |name, score|
         puts "#{name} \t #{score}"
       end
     end
@@ -30,7 +30,7 @@ module StashHouse
     def load_from_file
       @scoreboard_file.each_line do |line|
         l = line.strip #remove line breaks
-        @scoreboard[l.split(',')[0]] = l.split(',')[1]
+        @scoreboard[l.split(',')[0]] = l.split(',')[1].to_i
       end
     end
 

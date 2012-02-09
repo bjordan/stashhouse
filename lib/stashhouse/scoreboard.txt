@@ -1,5 +1,4 @@
-bar,3
-stu,4
-john,5
-barry,4
-b,5
+B,13
+Sera,8
+John,4
+Barry,12

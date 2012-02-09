@@ -1,3 +1,4 @@
+require 'stashhouse/config'
 require 'stashhouse/house'
 require 'stashhouse/thug'
 require 'stashhouse/stash'
@@ -6,41 +7,41 @@ require 'stashhouse/scoreboard'
 
 module StashHouse
   class Engine   
-    def initialize(num_rooms)     
-      @num_rows = Math.sqrt(num_rooms)      
+    def initialize     
+      @num_rows , @num_cols, @num_thugs = Config.load()
       
-      @directions = ['N', 'S', 'E', 'W']
       @scoreboard = ScoreBoard.new
-      @house = House.new(@num_rows)
+      @house = House.new(@num_rows, @num_cols)
 
       @stash = Stash.new(["100 Red Tops", "200 Yellow Tops"])
-      @thugs = [Thug.create(), Thug.create()]
+      @thugs = []
+      @num_thugs.times { @thugs << Thug.create() }
     end
 
     def init_actor_locations
-      @playa.location = [@num_rows-1, rand(@num_rows)]
+      @playa.location = [@num_rows-1, rand(@num_cols)]
       @house.rooms[@playa.location[0]][@playa.location[1]].contents.push(@playa)
 
-      @stash_location = [0,rand(@num_rows)]
-      @house.rooms[@stash_location[0]][@stash_location[1]].contents.push(@stash)
+      @stash.location = [0, rand(@num_cols)]
+      @house.rooms[@stash.location[0]][@stash.location[1]].contents.push(@stash)
 
       @thugs.each do |thug|
-        thug.location = [(@num_rows / 2).ceil, rand(@num_rows)]
+        thug.location = [(@num_rows / 2).ceil, rand(@num_cols)]
         @house.rooms[thug.location[0]][thug.location[1]].contents.push(thug)
       end
     end
 
     def start
-      instructions = 'Enter direction, N(North), S(South), E(East) or W(West) (ENTER to exit)'
-      p 'Whats yo name playa?'
-      playa_name = STDIN.gets.chomp()
+      print 'What\'s yo name playa? '
+      playa_name = STDIN.gets.chomp().capitalize
       @playa = Playa.new(playa_name)
 
+      instructions = "#{@playa.name}(P), find the stash(S) before the thugs(T) smoke your ass.\n"
+      instructions += "Enter direction, N(North), S(South), E(East) or W(West) (ENTER to exit)\n"
+
       init_actor_locations()  
-
+      print instructions
       print_floorplan()
-
-      p instructions
 
       while true
         print '> '
@@ -51,27 +52,26 @@ module StashHouse
         elsif valid_cardinal_direction?(input) 
           move(input.upcase)
         else  
-          p instructions
+          print instructions
         end
       end
     end
 
     def move(direction)
       # convert direction to next room coordinates
-      x, y = *@house.next_room_coords(direction, @playa.location)
+      x, y = @house.next_room_coords(direction, @playa.location)
 
       # check if move is valid (not off the map)
       if @house.valid_room?(x, y)
         @house.move_actor(@playa.location, [x, y], @playa)
         @playa.location = [x, y]
         game_status()
-        move_thugs()
         @playa.moves += 1
       else
-        p 'You just walked into a wall dumb ass.'
-        move_thugs()         
+        puts 'You just walked into a wall dumb ass.'
       end
 
+      move_thugs()
       game_status()
       print_floorplan()
     end
@@ -88,7 +88,8 @@ module StashHouse
 
     # recursive, only move one room at a time if the move is valid
     def move_thug(thug)
-      next_direction = @directions[rand(@directions.size - 1)]
+      directions = ['N', 'S', 'E', 'W']
+      next_direction = directions[rand(directions.size)]
       
       x, y = *@house.next_room_coords(next_direction, thug.location)
  
@@ -106,23 +107,23 @@ module StashHouse
         p "You got your ass smoked."
         end_game()
       end 
+
       if stash_found?
-        puts "You found the stash #{@stash}.\nNow get the hell outta there before your ass gets smoked."      
+        puts "You found the stash #{@stash.contents}.\nNow get the hell outta there before your ass gets smoked."      
         @scoreboard.update(@playa)
         end_game()
       end       
     end 
 
     def stash_found?
-      @stash_location[0] == @playa.location[0] and @stash_location[1] == @playa.location[1]
+      @house.in_same_room?(@stash, @playa)
     end 
 
     def ass_smoked?
-      smoked = false
       @thugs.each do |thug|
-        return true if thug.location[0] == @playa.location[0] and thug.location[1] == @playa.location[1]
+        return true if @house.in_same_room?(thug, @playa)
       end
-      smoked
+      false
     end 
 
     def print_floorplan
@@ -137,5 +138,5 @@ module StashHouse
   end
 end
 
-s = StashHouse::Engine.new(16)
+s = StashHouse::Engine.new
 s.start
