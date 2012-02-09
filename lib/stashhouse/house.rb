@@ -48,9 +48,9 @@ module StashHouse
       end      
     end
 
-    def move_actor(from_coords, to_coords, actor)
+    def move_actor(actor, to_coords)
       # there may be more than 1 actor in the room. If names are equal(eql?) then delete.
-      @rooms[from_coords[0]][from_coords[1]].contents.delete_if { |i| i.eql?(actor) }
+      @rooms[actor.location[0]][actor.location[1]].contents.delete_if { |i| i.eql?(actor) }
       @rooms[to_coords[0]][to_coords[1]].contents.push(actor)
     end
 

@@ -63,7 +63,7 @@ module StashHouse
 
       # check if move is valid (not off the map)
       if @house.valid_room?(x, y)
-        @house.move_actor(@playa.location, [x, y], @playa)
+        @house.move_actor(@playa, [x, y])
         @playa.location = [x, y]
         game_status()
         @playa.moves += 1
@@ -94,7 +94,7 @@ module StashHouse
       x, y = *@house.next_room_coords(next_direction, thug.location)
  
       if @house.valid_room?(x, y)
-        @house.move_actor(thug.location, [x, y], thug)
+        @house.move_actor(thug, [x, y])
         thug.location = [x, y]
       else
         move_thug(thug)
