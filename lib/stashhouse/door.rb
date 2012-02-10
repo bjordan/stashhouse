@@ -2,7 +2,7 @@ module StashHouse
   class Door
     attr_accessor :locked
 
-    def initialize()
+    def initialize
       @locked = false
     end
 

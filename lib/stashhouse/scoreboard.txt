@@ -1,4 +1,4 @@
 B,13
 Sera,8
 John,4
-Barry,12
+Barry,3

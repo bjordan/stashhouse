@@ -4,8 +4,12 @@ module StashHouse
   class Thug < Actor
     private_class_method :new
 
-    @@THUG_NAMES = %w[Chris Snoop Slim Charles Marlow Stringer]
-    @@NAME_INDEX = -1
+    class << self
+      attr_accessor :THUG_NAMES
+    end
+
+    @@THUG_NAMES = %w[Chris Snoop Slim Marlow Stringer]
+    @@name_index = -1
 
     def initialize(name)
       super
@@ -13,8 +17,8 @@ module StashHouse
 
     # factory method
     def self.create
-      @@NAME_INDEX += 1
-      new(@@THUG_NAMES[@@NAME_INDEX])
+      @@name_index += 1
+      new(@@THUG_NAMES[@@name_index])
     end
 
     def to_s

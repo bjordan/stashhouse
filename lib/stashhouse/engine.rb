@@ -137,6 +137,3 @@ module StashHouse
     end   
   end
 end
-
-s = StashHouse::Engine.new
-s.start

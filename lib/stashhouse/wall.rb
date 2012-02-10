@@ -2,7 +2,7 @@ module StashHouse
   class Wall
     attr_accessor :door
 
-    def initialize()
+    def initialize
       @door = nil
     end
   end
