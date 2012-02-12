@@ -15,6 +15,10 @@ module StashHouse
         Thug.create.should be_an_instance_of Thug
       end
 
+      it "is an Actor" do
+        Thug.create.is_a? Actor
+      end
+
       it "Thug has a name" do
         Thug.create.name.should_not be_empty
       end

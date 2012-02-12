@@ -9,29 +9,15 @@ module StashHouse
     end
 
     describe "#new" do
+      it "throws ArgumentError if no name passed" do
+        expect { 
+          Actor.new
+        }.to raise_error(ArgumentError)
+      end  
+            
       it "takes name parameters and returns a Actor object" do
         @actorOne.should be_an_instance_of Actor
       end
-    end
-
-    describe "#name" do
-      it "is a String" do
-        @actorOne.name.should be_a String
-      end
-
-      it "returns correct name" do
-        @actorOne.name.should eql "Barry"
-      end
-    end
-
-    describe "#location" do
-      it "is an Array" do
-        @actorOne.location.should be_an Array
-      end
-
-      it "is an Array of length 2" do
-        @actorOne.location.size.should eql 2
-      end  
     end
 
     describe "#eql?" do
@@ -42,6 +28,26 @@ module StashHouse
       it "is equal if names are the same" do
         @actorOne.eql?(@actorThree).should be_true
       end 
+    end
+
+    describe "name" do
+      it "is a String" do
+        @actorOne.name.should be_a String
+      end
+
+      it "returns correct name" do
+        @actorOne.name.should eql "Barry"
+      end
+    end
+
+    describe "location" do
+      it "is an Array" do
+        @actorOne.location.should be_an Array
+      end
+
+      it "is an Array of length 2" do
+        @actorOne.location.size.should eql 2
+      end  
     end
   end
 end

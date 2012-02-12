@@ -2,7 +2,7 @@ require 'stashhouse/room'
 
 module StashHouse
   class House
-    attr_accessor :rooms, :rows
+    attr_accessor :rooms
 
     def initialize(rows, cols)
       @rows = rows

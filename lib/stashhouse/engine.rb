@@ -1,4 +1,5 @@
-require 'stashhouse/config'
+require 'yaml'
+
 require 'stashhouse/house'
 require 'stashhouse/thug'
 require 'stashhouse/stash'
@@ -8,7 +9,7 @@ require 'stashhouse/scoreboard'
 module StashHouse
   class Engine   
     def initialize     
-      @num_rows , @num_cols, @num_thugs = Config.load()
+      @num_rows , @num_cols, @num_thugs = load_config()
       
       @scoreboard = ScoreBoard.new
       @house = House.new(@num_rows, @num_cols)
@@ -32,9 +33,7 @@ module StashHouse
     end
 
     def start
-      print 'What\'s yo name playa? '
-      playa_name = STDIN.gets.chomp().capitalize
-      @playa = Playa.new(playa_name)
+      get_playa()
 
       instructions = "#{@playa.name}(P), find the stash(S) before the thugs(T) smoke your ass.\n"
       instructions += "Enter direction, N(North), S(South), E(East) or W(West) (ENTER to exit)\n"
@@ -128,6 +127,20 @@ module StashHouse
 
     def print_floorplan
       print @house.floor_plan()
+    end
+
+    def get_playa
+      @playa = nil
+      while @playa.nil?
+        print 'What\'s yo name playa? '
+        playa_name = STDIN.gets.chomp().capitalize
+        @playa = Playa.new(playa_name) unless playa_name.empty?
+      end   
+    end
+
+    def load_config
+      config = YAML.load_file(File.expand_path('stashhouse/config.yml'))
+      [config['house_dimensions'][:rows], config['house_dimensions'][:cols], config[:num_thugs]]
     end
 
     def end_game

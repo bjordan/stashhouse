@@ -3,6 +3,8 @@ module StashHouse
     attr_accessor :name, :location
 
     def initialize(name)
+      raise ArgumentError if name.empty?
+
       @name = name
       @location = [0, 0]
     end

@@ -19,7 +19,7 @@ module StashHouse
       end
     end
 
-    describe "#contents" do
+    describe "contents" do
       it "is an Array" do
         @stash.contents.should be_an Array
       end
@@ -28,12 +28,12 @@ module StashHouse
         @stash.location.size.should eql 2
       end  
    
-       it "is an Array of Strings" do
-        @stash.location.size.should eql 2
+       it "is the Array passed as argument to constructor" do
+        @stash.contents.should =~ @stashContents
       end 
     end
 
-    describe "#location" do
+    describe "location" do
       it "is an Array" do
         @stash.location.should be_an Array
       end
