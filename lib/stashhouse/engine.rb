@@ -1,10 +1,6 @@
 require 'yaml'
 
-require 'stashhouse/house'
-require 'stashhouse/thug'
-require 'stashhouse/stash'
-require 'stashhouse/playa'
-require 'stashhouse/scoreboard'
+%w[house thug stash playa scoreboard].each { |i| require_relative i }
 
 module StashHouse
   class Engine   
@@ -33,7 +29,7 @@ module StashHouse
     end
 
     def start
-      get_playa()
+      create_playa()
 
       instructions = "#{@playa.name}(P), find the stash(S) before the thugs(T) smoke your ass.\n"
       instructions += "Enter direction, N(North), S(South), E(East) or W(West) (ENTER to exit)\n"
@@ -129,7 +125,7 @@ module StashHouse
       print @house.floor_plan()
     end
 
-    def get_playa
+    def create_playa
       @playa = nil
       while @playa.nil?
         print 'What\'s yo name playa? '
@@ -146,7 +142,11 @@ module StashHouse
     def end_game
       print_floorplan()
       @scoreboard.print
+      exit_program()
+    end
+    
+    def exit_program 
       Process.exit(1)
-    end   
+    end
   end
 end

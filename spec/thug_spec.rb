@@ -19,7 +19,7 @@ module StashHouse
         Thug.create.is_a? Actor
       end
 
-      it "Thug has a name" do
+      it "has a name" do
         Thug.create.name.should_not be_empty
       end
 

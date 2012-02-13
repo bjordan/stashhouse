@@ -1,4 +1,4 @@
-require 'stashhouse/room'
+require_relative 'room'
 
 module StashHouse
   class House

@@ -11,7 +11,7 @@ module StashHouse
     end
 
     # helper method
-    def create_and_update(name) do
+    def create_and_update(name)
       p = Playa.new(name)
       p.moves = 5
       s = ScoreBoard.new

@@ -1,6 +1,1 @@
-B,6
-Sera,8
-John,4
-Barry,3
-Tre3,6
-Tra,4
+Barry,9

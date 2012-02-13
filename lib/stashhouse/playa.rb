@@ -1,4 +1,4 @@
-require 'stashhouse/actor'
+require_relative 'actor'
 
 module StashHouse
   class Playa < Actor
